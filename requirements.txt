@@ -1,0 +1,5 @@
+# Root requirements.txt for the Agents codebase
+# This file includes requirements from all agent and child folders.
+# To add new requirements, create a requirements.txt in the relevant folder and add a line below with -r <relative/path/to/requirements.txt>
+
+-r langchain_agents/rag_agent/requirements.txt
