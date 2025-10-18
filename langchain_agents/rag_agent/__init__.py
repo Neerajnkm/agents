@@ -1,3 +1,9 @@
+"""
+RAG Agent subpackage for document processing, embedding, and retrieval-augmented generation.
+
+Contains agent implementations, LLM interface, and entry points for the RAG system.
+"""
+
 # This file marks the rag_agent directory as a Python package.
 # You can import agents and modules from this package using absolute imports.
 

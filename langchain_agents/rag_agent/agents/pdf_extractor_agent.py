@@ -7,10 +7,31 @@ import numpy as np
 import pytesseract
 
 class PDFExtractorAgent:
+    """
+    Agent for extracting text, images, diagrams, charts, and tables from PDF documents.
+
+    Methods:
+        extract(pdf_path): Extracts content from the given PDF file and returns a dictionary with extracted elements.
+    """
     def __init__(self, logger=None):
+        """
+        Initialize the PDFExtractorAgent.
+
+        Args:
+            logger (logging.Logger, optional): Logger instance for logging extraction steps. Defaults to None.
+        """
         self.logger = logger or logging.getLogger(__name__)
 
     def extract(self, pdf_path):
+        """
+        Extract content from a PDF file, including text, images, diagrams, charts, and tables.
+
+        Args:
+            pdf_path (str): Path to the PDF file to extract content from.
+
+        Returns:
+            dict: A dictionary with keys 'text', 'images', 'diagrams', 'charts', and 'tables', each containing a list of extracted items.
+        """
         self.logger.info(f"Extracting content from {pdf_path}")
         text_chunks = []
         images = []

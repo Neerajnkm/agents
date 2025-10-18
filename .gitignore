@@ -77,3 +77,6 @@ agent_performance_graph.png
 
 # Environment variables
 .env
+
+# Wiki documentation
+wiki/

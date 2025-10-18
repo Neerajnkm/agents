@@ -6,11 +6,32 @@ from PIL import Image
 import numpy as np
 
 class EmbeddingAgent:
+    """
+    Agent for generating embeddings for text, images, diagrams, charts, and tables.
+
+    Methods:
+        embed(chunks): Generates embeddings for provided content chunks and returns a dictionary of embeddings.
+    """
     def __init__(self, logger=None):
+        """
+        Initialize the EmbeddingAgent.
+
+        Args:
+            logger (logging.Logger, optional): Logger instance for logging embedding steps. Defaults to None.
+        """
         self.logger = logger or logging.getLogger(__name__)
         self.text_embedder = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
     def embed(self, chunks):
+        """
+        Generate embeddings for text, images, diagrams, charts, and tables.
+
+        Args:
+            chunks (dict): Dictionary containing lists for keys 'text_chunks', 'images', 'diagrams', 'charts', and 'tables'.
+
+        Returns:
+            dict or None: Dictionary with keys 'text', 'images', 'diagrams', 'charts', and 'tables', each containing a list of (item, embedding) tuples. Returns None if no embeddings are generated.
+        """
         # self.logger.info("Embedding text, images, diagrams, charts, tables")
         text_chunks = chunks.get("text_chunks", [])
         images = chunks.get("images", [])

@@ -6,12 +6,37 @@ from typing import Any, Dict, List, Optional
 load_dotenv()
 
 class GroqWrapper:
+    """
+    Wrapper for interacting with the Groq API for text (and optionally image) generation.
+
+    Methods:
+        generate(prompt, images=None, hyper_parameters=None, model=None): Generate a response from the Groq model.
+    """
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        """
+        Initialize the GroqWrapper.
+
+        Args:
+            api_key (str, optional): Groq API key. If not provided, loaded from environment.
+            model (str, optional): Default model name. If not provided, loaded from environment.
+        """
         self.api_key = api_key or os.getenv("GROQ_API_KEY")
         self.model = model or os.getenv("GROQ_DEFAULT_MODEL", "llama-2-70b-chat")
         self.api_url = f"https://api.groq.com/openai/v1/chat/completions"
 
     def generate(self, prompt: str, images: Optional[List[Any]] = None, hyper_parameters: Optional[Dict[str, Any]] = None, model: Optional[str] = None) -> str:
+        """
+        Generate a response from the Groq model for the given prompt and optional images/hyperparameters.
+
+        Args:
+            prompt (str): The prompt to send to the model.
+            images (list, optional): List of images to include (if supported).
+            hyper_parameters (dict, optional): Additional generation parameters.
+            model (str, optional): Model name to use.
+
+        Returns:
+            str: The generated response or error message.
+        """
         headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
         data = {
             "model": model or self.model,

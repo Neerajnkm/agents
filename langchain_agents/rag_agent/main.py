@@ -1,3 +1,8 @@
+"""
+Main entry point for the RAG Agent system. Handles PDF extraction, processing, embedding, vector DB storage, and Q&A.
+
+Run this script to interactively extract data from PDFs and perform retrieval-augmented question answering.
+"""
 import os
 from dotenv import load_dotenv
 from .agents.pdf_extractor_agent import PDFExtractorAgent
@@ -34,6 +39,15 @@ llm_caller = LLMCentralCaller()
 rag_agent = RAGAgent(llm_caller, vectordb, logger=logger)
 
 def extractor_node(state):
+    """
+    Extract content from the PDF file specified in the state and update the state with extracted data.
+
+    Args:
+        state (dict): The current agent state containing 'pdf_path'.
+
+    Returns:
+        dict: Updated state with 'extracted' content.
+    """
     pdf_path = state.get("pdf_path")
     extracted = pdf_extractor.extract(pdf_path)
     logger.info(f"extractor_node: extracted content keys: {list(extracted.keys()) if extracted else extracted}")
@@ -42,6 +56,15 @@ def extractor_node(state):
     return state
 
 def processor_node(state):
+    """
+    Process the extracted content in the state and update the state with processed data.
+
+    Args:
+        state (dict): The current agent state containing 'extracted' content.
+
+    Returns:
+        dict: Updated state with 'processed' content.
+    """
     extracted = state.get("extracted")
     logger.info(f"processor_node: received extracted content: {type(extracted)}, keys: {list(extracted.keys()) if extracted else extracted}")
     processed = processor.process(extracted)
@@ -49,6 +72,15 @@ def processor_node(state):
     return state
 
 def embedder_node(state):
+    """
+    Generate embeddings for the processed content in the state and update the state with embeddings.
+
+    Args:
+        state (dict): The current agent state containing 'processed' content.
+
+    Returns:
+        dict: Updated state with 'embeddings'.
+    """
     processed = state.get("processed")
     if processed is None:
         logger.warning("No processed content provided to embedder. Returning empty embeddings.")
@@ -59,6 +91,15 @@ def embedder_node(state):
     return state
 
 def vectordb_node(state):
+    """
+    Store embeddings from the state in the vector database.
+
+    Args:
+        state (dict): The current agent state containing 'embeddings'.
+
+    Returns:
+        dict: The unchanged state after storage.
+    """
     embeddings = state.get("embeddings")
     if embeddings is None:
         logger.warning("No embeddings provided to vectordb. Skipping storage.")
@@ -68,12 +109,27 @@ def vectordb_node(state):
     return state
 
 def rag_node(state):
+    """
+    Answer a user query using the RAG agent and update the state with the answer.
+
+    Args:
+        state (dict): The current agent state containing 'query'.
+
+    Returns:
+        dict: Updated state with 'answer'.
+    """
     query = state.get("query")
     answer = rag_agent.answer_query(query)
     state["answer"] = answer
     return state
 
 def build_agent_graph():
+    """
+    Build the agent workflow graph for document processing and Q&A.
+
+    Returns:
+        StateGraph: The constructed agent workflow graph.
+    """
     graph = StateGraph(AgentState)
     graph.add_node("extractor", extractor_node)
     graph.add_node("processor", processor_node)

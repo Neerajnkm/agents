@@ -1,3 +1,8 @@
+"""
+Wrappers package for LLM provider integrations (OpenAI, Gemini, Groq, HuggingFace, Llama).
+
+This package exposes unified wrapper classes for use throughout the agent system.
+"""
 # Make wrappers a package
 from .gemini_wrapper import GeminiWrapper
 from .groq_wrapper import GroqWrapper

@@ -8,7 +8,22 @@ load_dotenv()
 
 
 class VectorDBAgent:
+    """
+    Agent for managing storage and retrieval of embeddings in a persistent ChromaDB vector database.
+
+    Methods:
+        store(embeddings): Stores embeddings for text, images, diagrams, charts, and tables.
+        query(query_embedding, top_k=3): Queries the text collection for similar documents.
+        query_all_collections(query_embedding, top_k=3): Queries all collections for similar documents.
+        list_collections(): Lists all collection names in the persistent ChromaDB.
+    """
     def __init__(self, logger=None):
+        """
+        Initialize the VectorDBAgent and set up persistent ChromaDB collections for different content types.
+
+        Args:
+            logger (logging.Logger, optional): Logger instance for logging database operations. Defaults to None.
+        """
         self.logger = logger or logging.getLogger(__name__)
         self.chroma_client = chromadb.PersistentClient(path=os.getenv("CHROMADB_PERSIST_DIR"), settings=Settings(allow_reset=True))
         self.text_collection = self.chroma_client.get_or_create_collection("rag_text_collection")
@@ -21,6 +36,12 @@ class VectorDBAgent:
         self.logger.info("Initialized VectorDBAgent with collections.")
 
     def store(self, embeddings):
+        """
+        Store embeddings for text, images, diagrams, charts, and tables in their respective collections.
+
+        Args:
+            embeddings (dict): Dictionary with keys 'text', 'images', 'diagrams', 'charts', and 'tables', each containing a list of (item, embedding) tuples.
+        """
         self.logger.info("Storing embeddings in vector DB")
         # Store text embeddings
         for idx, (chunk, emb) in enumerate(embeddings.get("text", [])):
@@ -70,6 +91,16 @@ class VectorDBAgent:
             )
 
     def query(self, query_embedding, top_k=3):
+        """
+        Query the text collection for documents similar to the provided embedding.
+
+        Args:
+            query_embedding (list or np.ndarray): The embedding vector to query against.
+            top_k (int, optional): Number of top results to return. Defaults to 3.
+
+        Returns:
+            list: List of similar documents from the text collection.
+        """
         self.logger.info("Querying vector DB")
         # Use persistent ChromaDB location
         chroma_client = chromadb.PersistentClient(path=os.getenv("CHROMADB_PERSIST_DIR"))
@@ -81,7 +112,16 @@ class VectorDBAgent:
         return results["documents"][0] if results["documents"] else []
 
     def query_all_collections(self, query_embedding, top_k=3):
-        """Query all collections in the persistent ChromaDB and return results."""
+        """
+        Query all collections in the persistent ChromaDB and return results for each collection.
+
+        Args:
+            query_embedding (list or np.ndarray): The embedding vector to query against.
+            top_k (int, optional): Number of top results to return from each collection. Defaults to 3.
+
+        Returns:
+            dict: Dictionary mapping collection names to lists of similar documents or error messages.
+        """
         chroma_client = chromadb.PersistentClient(path=os.getenv("CHROMADB_PERSIST_DIR"))
         results = {}
         for col in chroma_client.list_collections():
@@ -94,6 +134,11 @@ class VectorDBAgent:
         return results
 
     def list_collections(self):
-        """Return a list of all collection names in the persistent ChromaDB."""
+        """
+        Return a list of all collection names in the persistent ChromaDB.
+
+        Returns:
+            list: List of collection names as strings.
+        """
         chroma_client = chromadb.PersistentClient(path=os.getenv("CHROMADB_PERSIST_DIR"))
         return [col.name for col in chroma_client.list_collections()]
